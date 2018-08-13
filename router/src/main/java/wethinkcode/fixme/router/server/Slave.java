@@ -8,7 +8,7 @@ import java.net.Socket;
 
 public class Slave extends Thread{
     private Socket socket;
-    private static int classId;
+    private static int classId = 0;
     private boolean assignId = false;
 
     public Slave (Socket socket) {
@@ -39,7 +39,6 @@ public class Slave extends Thread{
                 if (echoString.equals("exit")) {
                     break;
                 }
-
 
                 output.println(echoString);
             }
