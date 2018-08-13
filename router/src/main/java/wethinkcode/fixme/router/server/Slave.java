@@ -9,6 +9,7 @@ import java.net.Socket;
 public class Slave extends Thread{
     private Socket socket;
     private static int classId;
+    private boolean assignId = false;
 
     public Slave (Socket socket) {
         this.socket = socket;
@@ -17,15 +18,29 @@ public class Slave extends Thread{
     @Override
     public void run() {
         try {
-            //TODO : assign unique id to client of the server and relay back to client
+
             BufferedReader input  = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
             PrintWriter output = new PrintWriter(this.socket.getOutputStream(), true);
 
             while (true) {
+
+                /**
+                 * this part assign the unique id to the client
+                 */
+                if (this.assignId == false) {
+                    output.println(generateId());
+                    this.assignId = true;
+                }
+
+                /**
+                 * Communication between client and server should occur over here
+                 */
                 String echoString = input.readLine();
                 if (echoString.equals("exit")) {
                     break;
                 }
+
+
                 output.println(echoString);
             }
         }catch (IOException e) {
