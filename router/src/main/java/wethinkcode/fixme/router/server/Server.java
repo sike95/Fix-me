@@ -72,7 +72,7 @@ public class Server {
                 if (key.isWritable()) {
                     System.out.println("Writing man");
                     // write data to client...
-                  //  writeToClient(key);
+                    writeToClient(key);
                 }
             }
         }
@@ -122,12 +122,13 @@ public class Server {
         byte[] data = new byte[numRead];
         System.arraycopy(buffer.array(), 0, data, 0, numRead);
         System.out.println("Got: " + new String(data));
+        channel.register(this.selector, SelectionKey.OP_WRITE);
     }
 
     public void writeToClient(SelectionKey key) throws  IOException{
 
         SocketChannel channel = (SocketChannel)key.channel();
-        String messages = "this is the real world.";
+        String messages = "Awe Masekind you did figure this shit out. BOOOOOOOOM";
         this.buffer = ByteBuffer.allocate(1024);
         this.buffer.put(messages.getBytes());
         this.buffer.flip();
@@ -135,6 +136,13 @@ public class Server {
         //System.out.println(messages);
         this.buffer.clear();
        // channel.close();
+        /**
+         * Register channel with selector for further IO (record it for read/write
+         * operations, here we have used read operation)
+         *
+         * change this later to allow writing as well
+         */
+        channel.register(this.selector, SelectionKey.OP_READ);
     }
 
     public static void main(String[] args) throws Exception {
