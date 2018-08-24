@@ -12,30 +12,81 @@ import java.util.Iterator;
 import java.util.Set;
 
 public class Client {
+    private Selector selector;
+    private InetSocketAddress hostAddress;
+    private SocketChannel client;
+    private ByteBuffer buffer;
 
+    public Client() {
+        try {
+            this.selector = Selector.open();
+            this.hostAddress = new InetSocketAddress("localhost", 19000);
+            this.client = SocketChannel.open(this.hostAddress);
+            this.client.configureBlocking(false);
+            int operations = SelectionKey.OP_CONNECT | SelectionKey.OP_READ
+                    | SelectionKey.OP_WRITE;
+           this.client.register(this.selector, operations);
+        }
+        catch (IOException e) {
+            System.out.println("!------->A problem occurred whilst initializing the client<-------!");
+        }
 
-    public void startClient() throws IOException {
+    }
 
-        InetSocketAddress hostAddress = new InetSocketAddress("localhost", 19000);
-        SocketChannel client = SocketChannel.open(hostAddress);
-        client.configureBlocking(false);
+    public void startClient() throws Exception {
 
         System.out.println("Client... started");
 
-        //String threadName = Thread.currentThread().getName();
-
-        // Send messages to server
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
-        String messages = bufferedReader.readLine();
+        String messages;
 
-            ByteBuffer buffer = ByteBuffer.allocate(74);
-            buffer.put(messages.getBytes());
-            buffer.flip();
-            client.write(buffer);
-            System.out.println(messages);
-            buffer.clear();
+        while (true){
+            this.selector.select();
 
-            client.close();
+            Set<SelectionKey> selectionKeys = this.selector.selectedKeys();
+            Iterator<SelectionKey> iterator = selectionKeys.iterator();
+
+            while (iterator.hasNext()) {
+                SelectionKey key = iterator.next();
+                iterator.remove();
+                if (!key.isValid()) {
+                    continue;
+                }
+                if (key.isConnectable()) { // Accept client connections
+
+                    boolean connected = processConnect(key);
+                    if (!connected) {
+                        stop();
+                    }
+                } else if (key.isReadable()) { // Read from client
+                   // this.read(key);
+                } else if (key.isWritable()) {
+                    // write data to client...
+                    messages = bufferedReader.readLine();
+                    this.buffer = ByteBuffer.allocate(1024);
+                    this.buffer.put(messages.getBytes());
+                    this.buffer.flip();
+                    client.write(this.buffer);
+                    System.out.println(messages);
+                    this.buffer.clear();
+
+                   // this.client.close();
+                }
+            }
+        }
+    }
+
+    public void stop() throws IOException {
+        this.client.close();
+        this.buffer = null;
+    }
+
+    public static boolean processConnect(SelectionKey key) throws Exception{
+        SocketChannel channel = (SocketChannel) key.channel();
+        while (channel.isConnectionPending()) {
+            channel.finishConnect();
+        }
+        return true;
     }
 
     public static void main(String[] args) {
@@ -43,7 +94,9 @@ public class Client {
         Client client = new Client();
         try {
             client.startClient();
-        } catch (IOException e) {
+        } catch (IOException e ) {
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
