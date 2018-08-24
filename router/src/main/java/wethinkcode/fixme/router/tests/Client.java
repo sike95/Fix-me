@@ -18,14 +18,15 @@ public class Client {
 
         InetSocketAddress hostAddress = new InetSocketAddress("localhost", 19000);
         SocketChannel client = SocketChannel.open(hostAddress);
+        client.configureBlocking(false);
 
         System.out.println("Client... started");
 
         //String threadName = Thread.currentThread().getName();
 
         // Send messages to server
-        String messages = "awe motherschild. This should not be hardcoded";
-
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+        String messages = bufferedReader.readLine();
 
             ByteBuffer buffer = ByteBuffer.allocate(74);
             buffer.put(messages.getBytes());
