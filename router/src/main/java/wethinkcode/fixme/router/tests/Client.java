@@ -25,9 +25,10 @@ public class Client {
             this.hostAddress = new InetSocketAddress("localhost", 19000);
             this.client = SocketChannel.open(this.hostAddress);
             this.client.configureBlocking(false);
-            int operations = SelectionKey.OP_CONNECT | SelectionKey.OP_READ | SelectionKey.OP_WRITE;
+            int operations = SelectionKey.OP_CONNECT | SelectionKey.OP_READ;
             this.client.register(this.selector, operations);
             this.bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+            this.buffer = ByteBuffer.allocate(1024);
         }
         catch (IOException e) {
             System.out.println("!------->A problem occurred whilst initializing the client<-------!");
@@ -65,6 +66,8 @@ public class Client {
                     messages = new String(buffer.array()).trim();
                     System.out.println("response=" + messages);
                     buffer.clear();
+                    int operations = SelectionKey.OP_WRITE;
+                    this.client.register(this.selector, operations);
                 }
                 if (key.isWritable()) {
                     // write data to client...
@@ -83,6 +86,7 @@ public class Client {
         client.write(this.buffer);
         System.out.println(messages);
         this.buffer.clear();
+        this.client.register(this.selector, SelectionKey.OP_READ);
     }
 
     public void stop() throws IOException {
