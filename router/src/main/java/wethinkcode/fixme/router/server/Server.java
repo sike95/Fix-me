@@ -86,7 +86,7 @@ public class Server {
          *
          * change this later to allow writing as well
          */
-        channel.register(this.selector, SelectionKey.OP_READ);
+        channel.register(this.selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
     }
 
     private void read(SelectionKey key) throws IOException {
@@ -107,6 +107,14 @@ public class Server {
         byte[] data = new byte[numRead];
         System.arraycopy(buffer.array(), 0, data, 0, numRead);
         System.out.println("Got: " + new String(data));
+    }
+
+    public static void main(String[] args) throws Exception {
+        try {
+            new Server("localhost", 9093).startServer();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
 
