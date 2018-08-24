@@ -16,6 +16,8 @@ public class Client {
     private InetSocketAddress hostAddress;
     private SocketChannel client;
     private ByteBuffer buffer;
+    private  String messages;
+    private  BufferedReader bufferedReader;
 
     public Client() {
         try {
@@ -25,7 +27,8 @@ public class Client {
             this.client.configureBlocking(false);
             int operations = SelectionKey.OP_CONNECT | SelectionKey.OP_READ
                     | SelectionKey.OP_WRITE;
-           this.client.register(this.selector, operations);
+                       this.client.register(this.selector, operations);
+            this.bufferedReader = new BufferedReader(new InputStreamReader(System.in));
         }
         catch (IOException e) {
             System.out.println("!------->A problem occurred whilst initializing the client<-------!");
@@ -36,9 +39,6 @@ public class Client {
     public void startClient() throws Exception {
 
         System.out.println("Client... started");
-
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
-        String messages;
 
         while (true){
             this.selector.select();
@@ -62,18 +62,20 @@ public class Client {
                    // this.read(key);
                 } else if (key.isWritable()) {
                     // write data to client...
-                    messages = bufferedReader.readLine();
-                    this.buffer = ByteBuffer.allocate(1024);
-                    this.buffer.put(messages.getBytes());
-                    this.buffer.flip();
-                    client.write(this.buffer);
-                    System.out.println(messages);
-                    this.buffer.clear();
-
-                   // this.client.close();
+                    this.writeToClient();
                 }
             }
         }
+    }
+
+    public void writeToClient() throws Exception {
+        messages = bufferedReader.readLine();
+        this.buffer = ByteBuffer.allocate(1024);
+        this.buffer.put(messages.getBytes());
+        this.buffer.flip();
+        client.write(this.buffer);
+        System.out.println(messages);
+        this.buffer.clear();
     }
 
     public void stop() throws IOException {
