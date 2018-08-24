@@ -25,9 +25,8 @@ public class Client {
             this.hostAddress = new InetSocketAddress("localhost", 19000);
             this.client = SocketChannel.open(this.hostAddress);
             this.client.configureBlocking(false);
-            int operations = SelectionKey.OP_CONNECT | SelectionKey.OP_READ
-                    | SelectionKey.OP_WRITE;
-                       this.client.register(this.selector, operations);
+            int operations = SelectionKey.OP_CONNECT | SelectionKey.OP_READ | SelectionKey.OP_WRITE;
+            this.client.register(this.selector, operations);
             this.bufferedReader = new BufferedReader(new InputStreamReader(System.in));
         }
         catch (IOException e) {
@@ -53,15 +52,23 @@ public class Client {
                     continue;
                 }
                 if (key.isConnectable()) { // Accept client connections
-
+                System.out.println("Connected man");
                     boolean connected = processConnect(key);
                     if (!connected) {
                         stop();
                     }
-                } else if (key.isReadable()) { // Read from client
+                }
+                if (key.isReadable()) { // Read from client
                    // this.read(key);
-                } else if (key.isWritable()) {
+                    System.out.println("Reading man");
+                    client.read(buffer);
+                    messages = new String(buffer.array()).trim();
+                    System.out.println("response=" + messages);
+                    buffer.clear();
+                }
+                if (key.isWritable()) {
                     // write data to client...
+                    System.out.println("Writing man");
                     this.writeToClient();
                 }
             }
