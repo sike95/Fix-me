@@ -13,18 +13,51 @@ import java.util.Set;
 
 public class Client {
 
+
+    public void startClient() throws IOException {
+
+        InetSocketAddress hostAddress = new InetSocketAddress("localhost", 19000);
+        SocketChannel client = SocketChannel.open(hostAddress);
+
+        System.out.println("Client... started");
+
+        //String threadName = Thread.currentThread().getName();
+
+        // Send messages to server
+        String messages = "awe motherschild. This should not be hardcoded";
+
+
+            ByteBuffer buffer = ByteBuffer.allocate(74);
+            buffer.put(messages.getBytes());
+            buffer.flip();
+            client.write(buffer);
+            System.out.println(messages);
+            buffer.clear();
+
+            client.close();
+    }
+
     public static void main(String[] args) {
 
-        EchoClient.start();
+        Client client = new Client();
+        try {
+            client.startClient();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        //      EchoClient.start();
     }
 }
 
-class EchoClient {
+/*class EchoClient {
     private static SocketChannel client;
     private static ByteBuffer buffer;
     private static EchoClient instance;
     private static BufferedReader userInputReader = null;
     private static String  response;
+    private String clientId;
 
     public static EchoClient start() {
         if (instance == null)
@@ -56,11 +89,9 @@ class EchoClient {
                 Set<SelectionKey> selectionKeys = selector.selectedKeys();
                 Iterator<SelectionKey> iter = selectionKeys.iterator();
 
-
                 while (iter.hasNext()){
 
                         SelectionKey key = iter.next();
-
                         if (key.isConnectable()){
                             boolean connected = processConnect(key);
                             if (!connected) {
@@ -68,10 +99,10 @@ class EchoClient {
                             }
                         }
 
-                        if (key.isReadable()){
+                    if (key.isReadable()){
                             client.read(buffer);
-                            response = new String(buffer.array()).trim();
-                            System.out.println("response=" + response);
+                            clientId = new String(buffer.array()).trim();
+                            System.out.println("response=" + clientId);
                             buffer.clear();
                         }
 
@@ -110,3 +141,4 @@ class EchoClient {
         return true;
     }
 }
+*/
