@@ -24,6 +24,7 @@ public class Server {
     private Selector selector;
     private InetSocketAddress listenAddress;
     private final static int PORT = 19000;
+    private ByteBuffer buffer;
 
     public Server(String address, int port) throws IOException {
         listenAddress = new InetSocketAddress(address, this.PORT);
@@ -61,11 +62,17 @@ public class Server {
                     continue;
                 }
                 if (key.isAcceptable()) { // Accept client connections
+                    System.out.println("Connected man");
                     this.accept(key);
-                } else if (key.isReadable()) { // Read from client
+                }
+                if (key.isReadable()) { // Read from client
+                    System.out.println("Reading man");
                     this.read(key);
-                } else if (key.isWritable()) {
+                }
+                if (key.isWritable()) {
+                    System.out.println("Writing man");
                     // write data to client...
+                  //  writeToClient(key);
                 }
             }
         }
@@ -80,13 +87,21 @@ public class Server {
         SocketAddress remoteAddr = socket.getRemoteSocketAddress();
         System.out.println("Connected to: " + remoteAddr);
 
+        String id = IDGenerator.getIdGenerator().generateId();
+        this.buffer = ByteBuffer.allocate(1024);
+        this.buffer.put(id.getBytes());
+        this.buffer.flip();
+        channel.write(buffer);
+        //System.out.println(messages);
+        this.buffer.clear();
+
         /**
          * Register channel with selector for further IO (record it for read/write
          * operations, here we have used read operation)
          *
          * change this later to allow writing as well
          */
-        channel.register(this.selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+        channel.register(this.selector, SelectionKey.OP_READ);
     }
 
     private void read(SelectionKey key) throws IOException {
@@ -107,6 +122,19 @@ public class Server {
         byte[] data = new byte[numRead];
         System.arraycopy(buffer.array(), 0, data, 0, numRead);
         System.out.println("Got: " + new String(data));
+    }
+
+    public void writeToClient(SelectionKey key) throws  IOException{
+
+        SocketChannel channel = (SocketChannel)key.channel();
+        String messages = "this is the real world.";
+        this.buffer = ByteBuffer.allocate(1024);
+        this.buffer.put(messages.getBytes());
+        this.buffer.flip();
+        channel.write(buffer);
+        //System.out.println(messages);
+        this.buffer.clear();
+       // channel.close();
     }
 
     public static void main(String[] args) throws Exception {
