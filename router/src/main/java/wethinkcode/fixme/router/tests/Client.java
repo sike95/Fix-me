@@ -19,6 +19,11 @@ public class Client {
     private  String messages;
     private  BufferedReader bufferedReader;
 
+    /**
+     * Initializing the server
+     *
+     */
+
     public Client() {
         try {
             this.selector = Selector.open();
@@ -33,50 +38,60 @@ public class Client {
         catch (IOException e) {
             System.out.println("!------->A problem occurred whilst initializing the client<-------!");
         }
-
     }
+
+    /**
+     * Checks through the keys for when the incoming key is
+     * Valid, Acceptable, Readable, Writable
+     *
+     * @throws Exception
+     */
 
     public void startClient() throws Exception {
 
         System.out.println("Client... started");
-
         while (true){
-            this.selector.select();
-
+            if (this.selector.select() == 0)
+                continue;
             Set<SelectionKey> selectionKeys = this.selector.selectedKeys();
             Iterator<SelectionKey> iterator = selectionKeys.iterator();
-
             while (iterator.hasNext()) {
                 SelectionKey key = iterator.next();
                 iterator.remove();
-                if (!key.isValid()) {
+                if (!key.isValid())
                     continue;
-                }
-                if (key.isConnectable()) { // Accept client connections
-                System.out.println("Connected man");
+                if (key.isConnectable()) {
                     boolean connected = processConnect(key);
-                    if (!connected) {
+                    if (!connected)
                         stop();
-                    }
                 }
-                if (key.isReadable()) { // Read from client
-                   // this.read(key);
-                    System.out.println("Reading man");
-                    client.read(buffer);
-                    messages = new String(buffer.array()).trim();
-                    System.out.println("response=" + messages);
-                    buffer.clear();
-                    int operations = SelectionKey.OP_WRITE;
-                    this.client.register(this.selector, operations);
-                }
-                if (key.isWritable()) {
-                    // write data to client...
-                    System.out.println("Writing man");
+                if (key.isReadable())
+                    this.read();
+                if (key.isWritable())
                     this.writeToClient();
-                }
             }
         }
     }
+
+    /**
+     *
+     * @throws Exception
+     */
+
+    private void read () throws  Exception {
+        client.read(buffer);
+        messages = new String(buffer.array()).trim();
+        System.out.println("response=" + messages);
+        buffer.clear();
+        this.client.register(this.selector,  SelectionKey.OP_WRITE);
+    }
+
+    /**
+     * The server gets the socket from the key
+     * Writes to the client via the buffer
+     * Sets the option on the selector to read
+     * @throws Exception
+     */
 
     public void writeToClient() throws Exception {
         messages = bufferedReader.readLine();
