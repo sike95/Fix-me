@@ -37,6 +37,12 @@ public class Client {
         }
         catch (IOException e) {
             System.out.println("!------->A problem occurred whilst initializing the client<-------!");
+            try {
+                this.stop();
+            }
+            catch (IOException i) {
+                System.out.println("!------->A problem occurred whilst closing the client<-------!");
+            }
         }
     }
 
