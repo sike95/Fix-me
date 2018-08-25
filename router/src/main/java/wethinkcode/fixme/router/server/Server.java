@@ -1,11 +1,6 @@
 package wethinkcode.fixme.router.server;
 
-import wethinkcode.fixme.router.routing.Router;
-import wethinkcode.fixme.router.server.Validation.MessageValidationHandler;
-
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
@@ -14,71 +9,71 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 
 public class Server {
-    // allows a single thread to examine I/O events on multiple channels
     private Selector selector;
     private InetSocketAddress listenAddress;
-    private final static int PORT = 19000;
+    private final int port;
     private ByteBuffer buffer;
+    private ServerSocketChannel serverChannel;
 
+    /**
+     * Initializing the server
+     *
+     * @param address
+     * @param port
+     * @throws IOException
+     */
     public Server(String address, int port) throws IOException {
-        listenAddress = new InetSocketAddress(address, this.PORT);
+        this.port = port;
+        this.listenAddress = new InetSocketAddress(address, this.port);
+        this.selector = Selector.open();
+        this.serverChannel = ServerSocketChannel.open();
+        this.serverChannel.configureBlocking(false);
+        this.serverChannel.socket().bind(this.listenAddress);
+        this.serverChannel.register(this.selector, SelectionKey.OP_ACCEPT);
     }
 
-
+    /**
+     * Checks through the keys for when the incoming key is
+     * Valid, Acceptable, Readable, Writable
+     *
+     * @throws IOException
+     */
     private void startServer() throws IOException {
-        //allows the server to find multiple connections that are ready any I/0
-        this.selector = Selector.open();
-        //the serverChannel is only responsible for accepting new connections
-        ServerSocketChannel serverChannel = ServerSocketChannel.open();
-        //sets the serverChannel to a NIO
-        serverChannel.configureBlocking(false);
-        // bind server socket channel to port
-        serverChannel.socket().bind(this.listenAddress);
-        serverChannel.register(this.selector, SelectionKey.OP_ACCEPT);
 
-        System.out.println("Server started on port >> " + this.PORT);
-
+        System.out.println("Server started on port >> " + this.port);
         while (true) {
-            //checks if there any available channels
-            int readyCount = this.selector.select();
-            if (readyCount == 0) {
+            if ( this.selector.select() == 0)
                 continue;
-            }
-
-            // process selected keys...
             Set<SelectionKey> readyKeys = selector.selectedKeys();
             Iterator iterator = readyKeys.iterator();
             while (iterator.hasNext()) {
                 SelectionKey key = (SelectionKey) iterator.next();
-                // Remove key from set so we don't process it twice
                 iterator.remove();
-                if (!key.isValid()) {
+                if (!key.isValid())
                     continue;
-                }
-                if (key.isAcceptable()) { // Accept client connections
-                    System.out.println("Connected man");
+                if (key.isAcceptable())
                     this.accept(key);
-                }
-                if (key.isReadable()) { // Read from client
-                    System.out.println("Reading man");
+                if (key.isReadable())
                     this.read(key);
-                }
-                if (key.isWritable()) {
-                    System.out.println("Writing man");
-                    // write data to client...
-                    writeToClient(key);
-                }
+                if (key.isWritable())
+                    this.writeToClient(key, "BOOM. ITS ACTUALLY WORKING!");
             }
         }
     }
 
-    // accept client connection
+    /**
+     * The server creates the socket between client and the server
+     * Sets the socket to non-blocking
+     * Sends the client a unique id
+     *
+     * @param key
+     * @throws IOException
+     */
+
     private void accept(SelectionKey key) throws IOException {
         ServerSocketChannel serverChannel = (ServerSocketChannel) key.channel();
         SocketChannel channel = serverChannel.accept();
@@ -86,23 +81,18 @@ public class Server {
         Socket socket = channel.socket();
         SocketAddress remoteAddr = socket.getRemoteSocketAddress();
         System.out.println("Connected to: " + remoteAddr);
-
-        String id = IDGenerator.getIdGenerator().generateId();
-        this.buffer = ByteBuffer.allocate(1024);
-        this.buffer.put(id.getBytes());
-        this.buffer.flip();
-        channel.write(buffer);
-        //System.out.println(messages);
-        this.buffer.clear();
-
-        /**
-         * Register channel with selector for further IO (record it for read/write
-         * operations, here we have used read operation)
-         *
-         * change this later to allow writing as well
-         */
-        channel.register(this.selector, SelectionKey.OP_READ);
+        this.writeToClient(key, IDGenerator.getIdGenerator().generateId());
     }
+
+    /**
+     * The server gets the socket from the key
+     * Checks whether the is something to read, if so prints it out.
+     * (here more works needs to be done to the message.--> Validate and so forth)
+     * Sets the option on the selector to write
+     *
+     * @param key
+     * @throws IOException
+     */
 
     private void read(SelectionKey key) throws IOException {
         SocketChannel channel = (SocketChannel) key.channel();
@@ -118,36 +108,36 @@ public class Server {
             key.cancel();
             return;
         }
-
         byte[] data = new byte[numRead];
         System.arraycopy(buffer.array(), 0, data, 0, numRead);
         System.out.println("Got: " + new String(data));
         channel.register(this.selector, SelectionKey.OP_WRITE);
     }
 
-    public void writeToClient(SelectionKey key) throws  IOException{
+    /**
+     * The server gets the socket from the key
+     * Writes to the client via the buffer
+     * Sets the option on the selector to read
+     *
+     * @param key
+     * @param message
+     * @throws IOException
+     */
+
+    public void writeToClient(SelectionKey key, String message) throws  IOException{
 
         SocketChannel channel = (SocketChannel)key.channel();
-        String messages = "Awe Masekind you did figure this shit out. BOOOOOOOOM";
         this.buffer = ByteBuffer.allocate(1024);
-        this.buffer.put(messages.getBytes());
+        this.buffer.put(message.getBytes());
         this.buffer.flip();
         channel.write(buffer);
-        //System.out.println(messages);
         this.buffer.clear();
-       // channel.close();
-        /**
-         * Register channel with selector for further IO (record it for read/write
-         * operations, here we have used read operation)
-         *
-         * change this later to allow writing as well
-         */
         channel.register(this.selector, SelectionKey.OP_READ);
     }
 
     public static void main(String[] args) throws Exception {
         try {
-            new Server("localhost", 9093).startServer();
+            new Server("localhost", 19000).startServer();
         } catch (IOException e) {
             e.printStackTrace();
         }
