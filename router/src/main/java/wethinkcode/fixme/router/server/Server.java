@@ -1,5 +1,7 @@
 package wethinkcode.fixme.router.server;
 
+import lombok.Getter;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -12,6 +14,7 @@ import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.Set;
 
+@Getter
 public class Server {
     private Selector selector;
     private InetSocketAddress listenAddress;
@@ -42,7 +45,7 @@ public class Server {
      *
      * @throws IOException
      */
-    private void startServer() throws Exception {
+    public void startServer() throws Exception {
 
         System.out.println("Server started on port >> " + this.port);
         while (true) {
@@ -82,7 +85,7 @@ public class Server {
         Socket socket = channel.socket();
         SocketAddress remoteAddr = socket.getRemoteSocketAddress();
         System.out.println("Connected to: " + remoteAddr);
-        this.useSocketToWrite(channel, IDGenerator.getIdGenerator().generateId());
+        this.useSocketToWrite(channel, IDGenerator.getIdGenerator().generateId(this.listenAddress.toString()));
     }
 
     /**
@@ -96,6 +99,7 @@ public class Server {
      */
 
     private void read(SelectionKey key) throws IOException {
+       //TODO: close the port correctly
         SocketChannel channel = (SocketChannel) key.channel();
         ByteBuffer buffer = ByteBuffer.allocate(1024);
         int numRead = -1;
@@ -135,9 +139,9 @@ public class Server {
 
     /**
      * The server gets the socket from the key
-     *      *
+     *
      * @param key
-     * @param messagetpr
+     * @param message
      * @throws IOException
      */
 
@@ -149,8 +153,10 @@ public class Server {
 
     public static void main(String[] args) throws Exception {
         try {
-            new Server("localhost", 19000).startServer();
-        } catch (IOException e) {
+
+            Server server = new Server("localhost", 5000);
+            server.startServer();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
