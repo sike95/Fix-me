@@ -22,6 +22,7 @@ public class Client {
     /**
      * Initializing the server
      *
+     *
      */
 
     public Client() {
