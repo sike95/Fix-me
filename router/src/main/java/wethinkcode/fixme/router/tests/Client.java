@@ -28,7 +28,7 @@ public class Client {
     public Client() {
         try {
             this.selector = Selector.open();
-            this.hostAddress = new InetSocketAddress("localhost", 19000);
+            this.hostAddress = new InetSocketAddress("localhost", 5000);
             this.client = SocketChannel.open(this.hostAddress);
             this.client.configureBlocking(false);
             int operations = SelectionKey.OP_CONNECT | SelectionKey.OP_READ;
