@@ -42,7 +42,7 @@ public class Server {
      *
      * @throws IOException
      */
-    private void startServer() throws IOException {
+    private void startServer() throws Exception {
 
         System.out.println("Server started on port >> " + this.port);
         while (true) {
@@ -59,6 +59,7 @@ public class Server {
                     this.accept(key);
                 if (key.isReadable())
                     this.read(key);
+                //TODO: find out why when a client is forcefully closed an exception gets thrown
                 if (key.isWritable())
                     this.writeToClient(key, "BOOM. ITS ACTUALLY WORKING!");
             }
@@ -74,14 +75,14 @@ public class Server {
      * @throws IOException
      */
 
-    private void accept(SelectionKey key) throws IOException {
+    private void accept(SelectionKey key) throws Exception {
         ServerSocketChannel serverChannel = (ServerSocketChannel) key.channel();
         SocketChannel channel = serverChannel.accept();
         channel.configureBlocking(false);
         Socket socket = channel.socket();
         SocketAddress remoteAddr = socket.getRemoteSocketAddress();
         System.out.println("Connected to: " + remoteAddr);
-        this.writeToClient(key, IDGenerator.getIdGenerator().generateId());
+        this.useSocketToWrite(channel, IDGenerator.getIdGenerator().generateId());
     }
 
     /**
@@ -115,24 +116,35 @@ public class Server {
     }
 
     /**
-     * The server gets the socket from the key
-     * Writes to the client via the buffer
+     * Writes to client
      * Sets the option on the selector to read
      *
-     * @param key
+     * @param channel
      * @param message
-     * @throws IOException
+     * @throws Exception
      */
 
-    public void writeToClient(SelectionKey key, String message) throws  IOException{
-
-        SocketChannel channel = (SocketChannel)key.channel();
+    private void useSocketToWrite (SocketChannel channel, String message) throws Exception {
         this.buffer = ByteBuffer.allocate(1024);
         this.buffer.put(message.getBytes());
         this.buffer.flip();
         channel.write(buffer);
         this.buffer.clear();
         channel.register(this.selector, SelectionKey.OP_READ);
+    }
+
+    /**
+     * The server gets the socket from the key
+     *      *
+     * @param key
+     * @param messagetpr
+     * @throws IOException
+     */
+
+    public void writeToClient(SelectionKey key, String message) throws  Exception{
+
+        SocketChannel channel = (SocketChannel)key.channel();
+        this.useSocketToWrite(channel, message);
     }
 
     public static void main(String[] args) throws Exception {
