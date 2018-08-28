@@ -13,8 +13,11 @@ public class IDGenerator {
         return idGenerator;
     }
 
-    public static String generateId() {
+    //todo: depending on the port number of the server, set the first digit from left either to B(broker) || M(market)
 
+    public static String generateId(int port) {
+
+        String indicator = null;
         if (units < 9) {
             units++;
         }
@@ -41,7 +44,13 @@ public class IDGenerator {
         if (hundredThousands > 9) {
             return "error";
         }
-        return hundredThousands + "" + tenThousands + "" + thousands + "" + hundreds + "" + tens + "" + units;
+
+        if (port == 5000)
+            indicator = "B";
+        else if (port == 5001)
+            indicator = "M";
+
+        return indicator + "" + tenThousands + "" + thousands + "" + hundreds + "" + tens + "" + units;
 
     }
 }

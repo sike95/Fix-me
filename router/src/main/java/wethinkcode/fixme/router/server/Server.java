@@ -79,7 +79,7 @@ public class Server {
                 if (key.isAcceptable())
                     this.accept(key, routingTables);
                 if (key.isReadable())
-                    this.read(key);
+                    this.read(key, routingTables);
                 //TODO: find out why when a client is forcefully closed an exception gets thrown
                 if (key.isWritable())
                     this.writeToClient(key, "BOOM. ITS ACTUALLY WORKING!");
@@ -119,7 +119,7 @@ public class Server {
      * @throws IOException
      */
 
-    private void read(SelectionKey key) throws IOException {
+    private void read(SelectionKey key, List<RoutingTable> routingTable) throws IOException {
        //TODO: close the port correctly
         SocketChannel channel = (SocketChannel) key.channel();
         ByteBuffer buffer = ByteBuffer.allocate(1024);
@@ -137,25 +137,23 @@ public class Server {
         byte[] data = new byte[numRead];
         System.arraycopy(buffer.array(), 0, data, 0, numRead);
         String msg = new String(data);
-      // validation(msg);
+        System.out.println(validation(msg, routingTable));
         System.out.println("Got: " + msg);
         channel.register(this.selector, SelectionKey.OP_WRITE);
     }
 
-  /*  private void validation(String msg){
+    private boolean validation(String msg, List<RoutingTable> routingTable){
         // Todo implement FixValidator
         MessageValidationHandler chain1 = new CheckSumValidator();
-        MessageValidationHandler chain2 = new DestinationVerification();
+        MessageValidationHandler chain2 = new DestinationVerification(routingTable);
         MessageValidationHandler chain3 = new MessageForwarding();
 
         chain1.setNextHandler(chain2);
         chain2.setNextHandler(chain3);
 
         FixMessageValidator request = new FixMessageValidator(msg);
-
-        chain1.validateMessage(request);
-
-    }*/
+        return chain1.validateMessage(request);
+    }
 
     /**
      * Writes to client

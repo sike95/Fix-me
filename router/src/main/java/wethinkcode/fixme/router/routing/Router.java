@@ -32,17 +32,7 @@ public class Router {
         this.routingTable.add(new RoutingTable(destination, id, key));
     }
 
-    public SelectionKey getDestinationOfMessage(String id){
-        //make sure that if null, then an error should display
-        SelectionKey key = null;
-        for (RoutingTable link: routingTable) {
-            if (link.getId() != id)
-                continue;
-            key = link.getKey();
-            break;
-        }
-        return key;
-    }
+
 
     public static void main(String[] args) {
         new Router();

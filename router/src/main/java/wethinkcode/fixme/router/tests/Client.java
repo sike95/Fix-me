@@ -8,6 +8,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -18,6 +19,7 @@ public class Client {
     private ByteBuffer buffer;
     private  String messages;
     private  BufferedReader bufferedReader;
+    private String clientID;
 
     /**
      * Initializing the server
@@ -28,9 +30,10 @@ public class Client {
     public Client() {
         try {
             this.selector = Selector.open();
-            this.hostAddress = new InetSocketAddress("localhost", 5000);
+            this.hostAddress = new InetSocketAddress("localhost", 5001);
             this.client = SocketChannel.open(this.hostAddress);
             this.client.configureBlocking(false);
+            System.out.println(this.client.getLocalAddress().toString());
             int operations = SelectionKey.OP_CONNECT | SelectionKey.OP_READ;
             this.client.register(this.selector, operations);
             this.bufferedReader = new BufferedReader(new InputStreamReader(System.in));
@@ -102,6 +105,8 @@ public class Client {
 
     public void writeToClient() throws Exception {
         messages = bufferedReader.readLine();
+        messages = "B00001|8=FIX.4.4|9=43|35=1|49=B00001|56=M000001|55=NQS|44=300|38=3";/*bufferedReader.readLine();*/
+        messages = messages + "|10=" + checkSumCalculator(messages);
         this.buffer = ByteBuffer.allocate(1024);
         this.buffer.put(messages.getBytes());
         this.buffer.flip();
@@ -110,6 +115,29 @@ public class Client {
         this.buffer.clear();
         this.client.register(this.selector, SelectionKey.OP_READ);
     }
+
+    private String checkSumCalculator(String message){
+        String checkSum;
+        int total = 0;
+        String checkSumMessage = message.replace('|', '\u0001');
+        byte[] messageBytes = checkSumMessage.getBytes(StandardCharsets.US_ASCII);
+
+        for (int i = 0; i < message.length(); i++)
+            total += messageBytes[i];
+
+        int CalculatedChecksum = total % 256;
+        checkSum = Integer.toString(CalculatedChecksum );
+
+        return checkSum;
+    }
+
+
+
+
+
+
+
+
 
     public void stop() throws IOException {
         this.client.close();
