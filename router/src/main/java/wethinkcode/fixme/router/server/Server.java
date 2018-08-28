@@ -1,6 +1,8 @@
 package wethinkcode.fixme.router.server;
 
 import lombok.Getter;
+import wethinkcode.fixme.router.routing.RoutingTable;
+import wethinkcode.fixme.router.server.Validation.*;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -12,31 +14,30 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 @Getter
 public class Server {
     private Selector selector;
     private InetSocketAddress listenAddress;
-    private final int port;
+//    private final int port;
     private ByteBuffer buffer;
     private ServerSocketChannel serverChannel;
 
     /**
      * Initializing the server
      *
-     * @param address
-     * @param port
      * @throws IOException
      */
-    public Server(String address, int port) throws IOException {
-        this.port = port;
-        this.listenAddress = new InetSocketAddress(address, this.port);
+    public Server() throws IOException {
+//        this.port = port;
+//        this.listenAddress = new InetSocketAddress(address, this.port);
         this.selector = Selector.open();
-        this.serverChannel = ServerSocketChannel.open();
-        this.serverChannel.configureBlocking(false);
-        this.serverChannel.socket().bind(this.listenAddress);
-        this.serverChannel.register(this.selector, SelectionKey.OP_ACCEPT);
+//        this.serverChannel = ServerSocketChannel.open();
+//        this.serverChannel.configureBlocking(false);
+//        this.serverChannel.socket().bind(this.listenAddress);
+//        this.serverChannel.register(this.selector, SelectionKey.OP_ACCEPT);
     }
 
     /**
@@ -45,9 +46,26 @@ public class Server {
      *
      * @throws IOException
      */
-    public void startServer() throws Exception {
+    public void startServer(List<RoutingTable> routingTables) throws Exception {
 
-        System.out.println("Server started on port >> " + this.port);
+//        System.out.println("Server started on port >> " + this.port);
+
+        int[] ports = {5000, 5001};
+
+        for (int port : ports) {
+
+            ServerSocketChannel server = ServerSocketChannel.open();
+            server.configureBlocking(false);
+            server.socket().bind(new InetSocketAddress(port));
+            server.register(selector, SelectionKey.OP_ACCEPT);
+            if (port == 5001){
+                System.out.println("Market connected");
+            }
+            else if (port == 5000){
+                System.out.println("Broker connected");
+            }
+        }
+
         while (true) {
             if ( this.selector.select() == 0)
                 continue;
@@ -59,7 +77,7 @@ public class Server {
                 if (!key.isValid())
                     continue;
                 if (key.isAcceptable())
-                    this.accept(key);
+                    this.accept(key, routingTables);
                 if (key.isReadable())
                     this.read(key);
                 //TODO: find out why when a client is forcefully closed an exception gets thrown
@@ -78,14 +96,17 @@ public class Server {
      * @throws IOException
      */
 
-    private void accept(SelectionKey key) throws Exception {
+    private void accept(SelectionKey key, List<RoutingTable> routingTables) throws Exception {
         ServerSocketChannel serverChannel = (ServerSocketChannel) key.channel();
         SocketChannel channel = serverChannel.accept();
         channel.configureBlocking(false);
         Socket socket = channel.socket();
         SocketAddress remoteAddr = socket.getRemoteSocketAddress();
         System.out.println("Connected to: " + remoteAddr);
-        this.useSocketToWrite(channel, IDGenerator.getIdGenerator().generateId(this.listenAddress.toString()));
+        System.out.println("Listen from port : " + socket.getLocalPort());
+        String clientId =  IDGenerator.getIdGenerator().generateId(socket.getLocalPort());
+        routingTables.add(new RoutingTable("girhbiharbh", clientId,  key));
+        this.useSocketToWrite(channel, clientId);
     }
 
     /**
@@ -115,9 +136,26 @@ public class Server {
         }
         byte[] data = new byte[numRead];
         System.arraycopy(buffer.array(), 0, data, 0, numRead);
-        System.out.println("Got: " + new String(data));
+        String msg = new String(data);
+      // validation(msg);
+        System.out.println("Got: " + msg);
         channel.register(this.selector, SelectionKey.OP_WRITE);
     }
+
+  /*  private void validation(String msg){
+        // Todo implement FixValidator
+        MessageValidationHandler chain1 = new CheckSumValidator();
+        MessageValidationHandler chain2 = new DestinationVerification();
+        MessageValidationHandler chain3 = new MessageForwarding();
+
+        chain1.setNextHandler(chain2);
+        chain2.setNextHandler(chain3);
+
+        FixMessageValidator request = new FixMessageValidator(msg);
+
+        chain1.validateMessage(request);
+
+    }*/
 
     /**
      * Writes to client
@@ -149,16 +187,6 @@ public class Server {
 
         SocketChannel channel = (SocketChannel)key.channel();
         this.useSocketToWrite(channel, message);
-    }
-
-    public static void main(String[] args) throws Exception {
-        try {
-
-            Server server = new Server("localhost", 5000);
-            server.startServer();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 }
 
