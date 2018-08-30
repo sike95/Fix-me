@@ -2,7 +2,6 @@ package wethinkcode.fixme.router.server.Validation;
 
 public interface MessageValidationHandler {
 
-    public void setNextHandler(MessageValidationHandler nextHandler);
-
-    public void validateMessage(FixMessageValidator validMessage);
+    void setNextHandler(MessageValidationHandler nextHandler);
+    boolean validateMessage(FixMessageValidator validMessage);
 }

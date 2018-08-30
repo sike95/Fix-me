@@ -1,31 +1,40 @@
 package wethinkcode.fixme.router.routing;
 
-import sun.swing.BakedArrayList;
+import lombok.Getter;
+import wethinkcode.fixme.router.server.Server;
 
+import java.io.IOException;
 import java.nio.channels.SelectionKey;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public class Router {
 
-    List<RoutingTable> routingTables = new ArrayList<>();
+    private List<RoutingTable> routingTable ;
+    private Server broker;
+    private Server market;
 
     public Router(){
-        //This first entry into the routingTable will be the server entering its self into the routing table
-        // note: this not just looks cool but is also realistic
-        addToRoutingTable(0, "127.0.0.1", null);
+        this.routingTable = new ArrayList<>();
+        try {
+            this.broker = new Server();
+            this.broker.startServer(this.routingTable);
+            this.addToRoutingTable("000000", this.broker.getListenAddress().toString(), null);// why is this key null?
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    public void addToRoutingTable(int id, String destination, SelectionKey key){
+    public void addToRoutingTable(String id, String destination, SelectionKey key){
 
-        routingTables.add(new RoutingTable(destination, id, key));
+        this.routingTable.add(new RoutingTable(destination, id, key));
     }
 
-    public String getDestinationOfMessage(){
 
-        String Destination = "";
 
-        //TODO :: IDentify destination of message in the routing table
-        return Destination;
+    public static void main(String[] args) {
+        new Router();
     }
 }

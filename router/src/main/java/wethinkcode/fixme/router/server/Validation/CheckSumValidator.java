@@ -12,22 +12,30 @@ public class CheckSumValidator implements MessageValidationHandler {
     }
 
     @Override
-    public void validateMessage(FixMessageValidator validMessage) {
+    public boolean validateMessage(FixMessageValidator validMessage) {
 
-       String message = validMessage.getMessage().replace(" ", "");
+       String message = validMessage.getMessage();
+       //System.out.println("this is msg: " + message);
        String[] tags = message.split("\\|");
-       String chekSumTag = tags[tags.length - 1];
+       String checksum = tags[tags.length - 1].split("=")[1];
+       message = "";
+        for (String item: tags) {
+            if (!item.contains("10="))
+                message = message.concat(item + "|");
+        }
 
-       String checksum = chekSumTag.split("=")[1];
-       String calculatedCheckSum = checkSumCalculator(message);
-
+        String calculatedCheckSum = checkSumCalculator(message);
         // We will go to the next calculation of the chain else we will send out an error message to the
         // Client or Merchant telling them their message is invalid.
        if (checksum.contentEquals(calculatedCheckSum)) {
+           System.out.println("checksum works");
            nextChain.validateMessage(validMessage);
+
+           return true;
        }
        else {
            //TODO Handle error messages on request
+           return false;
        }
     }
 
@@ -45,7 +53,7 @@ public class CheckSumValidator implements MessageValidationHandler {
             total += messageBytes[i];
 
         int CalculatedChecksum = total % 256;
-        checkSum = Integer.toString(CalculatedChecksum * 10);
+        checkSum = Integer.toString(CalculatedChecksum - 1) ;
 
         return checkSum;
     }

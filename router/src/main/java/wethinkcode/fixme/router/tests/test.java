@@ -5,8 +5,7 @@ import java.nio.charset.StandardCharsets;
 public class test {
 
     public static void main(String[] args) {
-        String message = "8=FIX.4.1|9=61|35=A|34=1|49=EXEC|52=20121105-23:24:06|"
-                + "56=BANZAI|98=0|108=30|";
+        String message = "8=FIX.4.4|9=43|35=1|49=B00001|56=M000001|55=NQS|44=300|38=3";
         String[] tags;
 
         message = message.replace(" ", "");
