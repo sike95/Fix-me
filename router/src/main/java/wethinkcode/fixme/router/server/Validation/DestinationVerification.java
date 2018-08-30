@@ -28,7 +28,7 @@ public class DestinationVerification implements MessageValidationHandler {
         market = tags[5].split("=")[1];
 
         for (RoutingTable item : routingTables){
-            if (item.getNetWorkDestination().equals(market)){
+            if (item.getId().equals(market)){
                 flag = true;
                 break;
             }
@@ -36,6 +36,7 @@ public class DestinationVerification implements MessageValidationHandler {
         if (!flag) {
             return false;
         } else {
+            System.out.println("destination verification works");
             nextChain.validateMessage(validMessage);
             return true;
         }

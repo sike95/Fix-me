@@ -28,9 +28,9 @@ public class CheckSumValidator implements MessageValidationHandler {
         // We will go to the next calculation of the chain else we will send out an error message to the
         // Client or Merchant telling them their message is invalid.
        if (checksum.contentEquals(calculatedCheckSum)) {
-
+           System.out.println("checksum works");
            nextChain.validateMessage(validMessage);
-           System.out.println("validation");
+
            return true;
        }
        else {

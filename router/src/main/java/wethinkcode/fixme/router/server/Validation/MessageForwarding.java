@@ -20,7 +20,7 @@ public class MessageForwarding implements MessageValidationHandler{
 
     @Override
     public boolean validateMessage(FixMessageValidator validMessage){
-
+    System.out.println("sending message");
      return true;
     }
 

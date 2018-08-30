@@ -105,7 +105,7 @@ public class Client {
 
     public void writeToClient() throws Exception {
         messages = bufferedReader.readLine();
-        messages = "B00001|8=FIX.4.4|9=43|35=1|49=B00001|56=M000001|55=NQS|44=300|38=3";/*bufferedReader.readLine();*/
+        messages = "B00001|8=FIX.4.4|9=43|35=1|49=B00001|56=M00002|55=NQS|44=300|38=3";/*bufferedReader.readLine();*/
         messages = messages + "|10=" + checkSumCalculator(messages);
         this.buffer = ByteBuffer.allocate(1024);
         this.buffer.put(messages.getBytes());
@@ -131,14 +131,6 @@ public class Client {
         return checkSum;
     }
 
-
-
-
-
-
-
-
-
     public void stop() throws IOException {
         this.client.close();
         this.buffer = null;
@@ -162,9 +154,6 @@ public class Client {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
-        //      EchoClient.start();
     }
 }
 
