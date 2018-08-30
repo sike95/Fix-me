@@ -105,7 +105,7 @@ public class Server {
         System.out.println("Connected to: " + remoteAddr);
         System.out.println("Listen from port : " + socket.getLocalPort());
         String clientId =  IDGenerator.getIdGenerator().generateId(socket.getLocalPort());
-        routingTables.add(new RoutingTable("girhbiharbh", clientId,  key));
+        routingTables.add(new RoutingTable( clientId,  key));
         this.useSocketToWrite(channel, clientId);
     }
 
