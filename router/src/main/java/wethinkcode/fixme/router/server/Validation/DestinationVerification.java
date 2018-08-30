@@ -36,7 +36,6 @@ public class DestinationVerification implements MessageValidationHandler {
         if (!flag) {
             return false;
         } else {
-            System.out.println("destination verification works");
             nextChain.validateMessage(validMessage);
             return true;
         }
