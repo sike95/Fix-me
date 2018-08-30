@@ -76,7 +76,11 @@ public class Client {
                         stop();
                 }
                 if (key.isReadable())
+                {
+                    System.out.println("Enter is readable.");
                     this.read();
+                }
+
                 if (key.isWritable())
                     this.writeToClient();
             }
@@ -93,7 +97,7 @@ public class Client {
         messages = new String(buffer.array()).trim();
         System.out.println("response=" + messages);
         buffer.clear();
-        this.client.register(this.selector,  SelectionKey.OP_WRITE);
+        this.client.register(this.selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE );
     }
 
     /**

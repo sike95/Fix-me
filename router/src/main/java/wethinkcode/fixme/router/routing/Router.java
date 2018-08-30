@@ -5,6 +5,7 @@ import wethinkcode.fixme.router.server.Server;
 
 import java.io.IOException;
 import java.nio.channels.SelectionKey;
+import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,9 +27,9 @@ public class Router {
         }
     }
 
-    public void addToRoutingTable(String id, SelectionKey key){
+    public void addToRoutingTable(String id, SocketChannel channel){
 
-        this.routingTable.add(new RoutingTable(id, key));
+        this.routingTable.add(new RoutingTable(id, channel));
     }
 
 
