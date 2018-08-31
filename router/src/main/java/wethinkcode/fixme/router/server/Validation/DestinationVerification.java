@@ -1,13 +1,19 @@
 package wethinkcode.fixme.router.server.Validation;
 
+import lombok.Getter;
 import wethinkcode.fixme.router.routing.RoutingTable;
 
+import java.nio.channels.SelectionKey;
+import java.nio.channels.SocketChannel;
 import java.util.List;
 
+
+@Getter
 public class DestinationVerification implements MessageValidationHandler {
 
     private MessageValidationHandler nextChain;
     private List<RoutingTable> routingTables;
+    private SocketChannel channel;
 
     public DestinationVerification(List<RoutingTable> routingTables) {
         this.routingTables = routingTables;
@@ -27,17 +33,17 @@ public class DestinationVerification implements MessageValidationHandler {
         String [] tags = validFixMessage.split("\\|");
         market = tags[5].split("=")[1];
 
-        for (RoutingTable item : routingTables){
+        for (RoutingTable item : this.routingTables){
             if (item.getId().equals(market)){
                 flag = true;
+                this.channel = item.getChannel();
                 break;
             }
         }
         if (!flag) {
             return false;
         } else {
-            System.out.println("destination verification works");
-            nextChain.validateMessage(validMessage);
+            this.nextChain.validateMessage(validMessage);
             return true;
         }
     }

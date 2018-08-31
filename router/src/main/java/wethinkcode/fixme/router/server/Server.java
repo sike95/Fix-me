@@ -112,7 +112,7 @@ public class Server {
         System.out.println("Connected to: " + remoteAddr);
         System.out.println("Listen from port : " + socket.getLocalPort());
         String clientId =  IDGenerator.getIdGenerator().generateId(socket.getLocalPort());
-        routingTables.add(new RoutingTable("girhbiharbh", clientId,  key));
+        routingTables.add(new RoutingTable( clientId, channel));
         this.useSocketToWrite(channel, clientId);
     }
 
@@ -126,7 +126,7 @@ public class Server {
      * @throws IOException
      */
 
-    private void read(SelectionKey key, List<RoutingTable> routingTable) throws IOException {
+    private void read(SelectionKey key, List<RoutingTable> routingTable) throws Exception {
        //TODO: close the port correctly
         SocketChannel channel = (SocketChannel) key.channel();
         ByteBuffer buffer = ByteBuffer.allocate(1024);
@@ -144,12 +144,21 @@ public class Server {
         byte[] data = new byte[numRead];
         System.arraycopy(buffer.array(), 0, data, 0, numRead);
         String msg = new String(data);
-        System.out.println(validation(msg, routingTable));
+        SocketChannel marketChannel = validation(msg, routingTable);
+        if (marketChannel == null) {
+            //TODO: send back broker an error message
+            System.out.println("Need to send the client an error message");
+        } else {
+            //TODO: send the market the message from the broker
+            System.out.println("valid message");
+            this.useSocketToWrite(marketChannel, msg);
+        }
+
         System.out.println("Got: " + msg);
         channel.register(this.selector, SelectionKey.OP_WRITE);
     }
 
-    private boolean validation(String msg, List<RoutingTable> routingTable){
+    private SocketChannel validation(String msg, List<RoutingTable> routingTable){
         // Todo implement FixValidator
         MessageValidationHandler chain1 = new CheckSumValidator();
         MessageValidationHandler chain2 = new DestinationVerification(routingTable);
@@ -159,7 +168,10 @@ public class Server {
         chain2.setNextHandler(chain3);
 
         FixMessageValidator request = new FixMessageValidator(msg);
-        return chain1.validateMessage(request);
+
+        if (chain1.validateMessage(request))
+            return ((DestinationVerification) chain2).getChannel();
+        return null;
     }
 
     /**
@@ -172,6 +184,7 @@ public class Server {
      */
 
     private void useSocketToWrite (SocketChannel channel, String message) throws Exception {
+
         this.buffer = ByteBuffer.allocate(1024);
         this.buffer.put(message.getBytes());
         this.buffer.flip();
@@ -194,38 +207,3 @@ public class Server {
         this.useSocketToWrite(channel, message);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

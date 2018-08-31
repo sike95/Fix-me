@@ -5,6 +5,7 @@ import wethinkcode.fixme.router.server.Server;
 
 import java.io.IOException;
 import java.nio.channels.SelectionKey;
+import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,24 +13,23 @@ import java.util.List;
 public class Router {
 
     private List<RoutingTable> routingTable ;
-    private Server broker;
-    private Server market;
+    private Server server;
 
     public Router(){
         this.routingTable = new ArrayList<>();
         try {
-            this.broker = new Server();
-            this.broker.startServer(this.routingTable);
-            this.addToRoutingTable("000000", this.broker.getListenAddress().toString(), null);// why is this key null?
+            this.server = new Server();
+            this.server.startServer(this.routingTable);
+            this.addToRoutingTable("000000", null);// why is this key null?
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void addToRoutingTable(String id, String destination, SelectionKey key){
+    public void addToRoutingTable(String id, SocketChannel channel){
 
-        this.routingTable.add(new RoutingTable(destination, id, key));
+        this.routingTable.add(new RoutingTable(id, channel));
     }
 
 

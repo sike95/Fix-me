@@ -4,18 +4,17 @@ import lombok.Getter;
 import wethinkcode.fixme.router.server.Server;
 
 import java.nio.channels.SelectionKey;
+import java.nio.channels.SocketChannel;
 
 @Getter
 public class RoutingTable {
 
-    private String netWorkDestination;
     private String    id;
-    private SelectionKey key;
+    private SocketChannel channel;
 
-    public RoutingTable(String netWorkDestination, String id, SelectionKey key){
+    public RoutingTable(String id, SocketChannel channel){
         this.id = id;
-        this.netWorkDestination = netWorkDestination;
-        this.key = key;
+        this.channel = channel;
     }
 
 
