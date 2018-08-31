@@ -11,6 +11,6 @@ public class Commodity {
     public Commodity(String name, float totalAmount, float price) {
         this.name = name;
         this.totalAmount = totalAmount;
-        this.price = price;
+        this.price =  price;
     }
 }
