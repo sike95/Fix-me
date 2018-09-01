@@ -142,11 +142,11 @@ public class Market {
      * @param message
      * @return
      */
-    
+
     private boolean processMessage (String message) {
         String []splitMessage = message.split("|");
-        String instrument = splitMessage[6];
-        double quantity = Double.parseDouble(splitMessage[8]);
+        String instrument = splitMessage[6].split("=")[1];
+        double quantity = Double.parseDouble(splitMessage[8].split("=")[1]);
         boolean quantityCheck = false;
 
         for (Commodity commodity: this.commodities) {
