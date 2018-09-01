@@ -72,10 +72,10 @@ public class Server {
                     continue;
                 if (key.isAcceptable())
                     this.accept(key, routingTables);
-                if (key.isReadable())
+                if (key.isValid() && key.isReadable())
                     this.read(key, routingTables);
                 //TODO: find out why when a client is forcefully closed an exception gets thrown
-                if (key.isWritable())
+                if (key.isValid() && key.isWritable())
                     this.writeToClient(key, "BOOM. ITS ACTUALLY WORKING!");
             }
         }
