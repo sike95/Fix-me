@@ -32,8 +32,6 @@ public class Router {
         this.routingTable.add(new RoutingTable(id, channel));
     }
 
-
-
     public static void main(String[] args) {
         new Router();
     }
