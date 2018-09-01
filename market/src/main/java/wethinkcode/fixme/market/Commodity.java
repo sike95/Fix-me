@@ -13,4 +13,13 @@ public class Commodity {
         this.totalAmount = totalAmount;
         this.price =  price;
     }
+
+    public boolean buyCommodity (double quantity){
+        this.totalAmount -= quantity;
+        if (this.totalAmount <= 0){
+            this.totalAmount += quantity;
+            return false;
+        }
+            return true;
+    }
 }
