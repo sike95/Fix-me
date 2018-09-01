@@ -59,10 +59,10 @@ public class Server {
             server.socket().bind(new InetSocketAddress(port));
             server.register(selector, SelectionKey.OP_ACCEPT);
             if (port == 5001){
-                System.out.println("Market connected");
+                System.out.println("Listening on port :" + server.getLocalAddress());
             }
             else if (port == 5000){
-                System.out.println("Broker connected");
+                System.out.println("Listening on port :" + server.getLocalAddress());
             }
         }
 
