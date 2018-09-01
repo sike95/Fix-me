@@ -31,13 +31,7 @@ public class Server {
      * @throws IOException
      */
     public Server() throws IOException {
-//        this.port = port;
-//        this.listenAddress = new InetSocketAddress(address, this.port);
         this.selector = Selector.open();
-//        this.serverChannel = ServerSocketChannel.open();
-//        this.serverChannel.configureBlocking(false);
-//        this.serverChannel.socket().bind(this.listenAddress);
-//        this.serverChannel.register(this.selector, SelectionKey.OP_ACCEPT);
     }
 
     /**
@@ -48,7 +42,7 @@ public class Server {
      */
     public void startServer(List<RoutingTable> routingTables) throws Exception {
 
-//        System.out.println("Client started on port >> " + this.port);
+        System.out.println("Starting the server");
 
         int[] ports = {5000, 5001};
 
