@@ -5,10 +5,10 @@ import lombok.Getter;
 @Getter
 public class Commodity {
     private String name;
-    private float totalAmount;
-    private float price;
+    private double totalAmount;
+    private double price;
 
-    public Commodity(String name, float totalAmount, float price) {
+    public Commodity(String name, double totalAmount, double price) {
         this.name = name;
         this.totalAmount = totalAmount;
         this.price =  price;
