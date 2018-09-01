@@ -10,13 +10,14 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 
 @Getter
 public class Market {
     private String name;
-    private Commodity stock1, stock2, stock3;
+    private ArrayList<Commodity> commodities;
     private Selector selector;
     private InetSocketAddress hostAddress;
     private SocketChannel client;
@@ -28,9 +29,10 @@ public class Market {
 
     public Market(String name, Commodity stock1, Commodity stock2, Commodity stock3) {
         this.name = name;
-        this.stock1 = stock1;
-        this.stock2 = stock2;
-        this.stock3 = stock3;
+        this.commodities = new ArrayList<>();
+        this.commodities.add(stock1);
+        this.commodities.add(stock2);
+        this.commodities.add(stock3);
         this.idFlag = false;
         this.socketSetUp();
     }
@@ -44,7 +46,7 @@ public class Market {
             this.hostAddress = new InetSocketAddress("localhost", 5001);
             this.client = SocketChannel.open(this.hostAddress);
             this.client.configureBlocking(false);
-            //System.out.println(this.client.getLocalAddress().toString());
+
             int operations = SelectionKey.OP_CONNECT | SelectionKey.OP_READ;
             this.client.register(this.selector, operations);
             this.bufferedReader = new BufferedReader(new InputStreamReader(System.in));
@@ -117,7 +119,7 @@ public class Market {
     private void read () throws  Exception {
         client.read(buffer);
         messages = new String(buffer.array()).trim();
-        //TODO: take in the message on process accordingly. blah blah blah
+
         System.out.println("->" + messages);
         if (!this.idFlag){
             this.clientID = messages;
@@ -126,9 +128,33 @@ public class Market {
             System.out.println("I am able to read agian");
         }
         else {
+            //TODO: take in the message on process accordingly. blah blah blah
+            this.processMessage(messages);
             this.client.register(this.selector, SelectionKey.OP_WRITE );
         }
         buffer.clear();
+    }
+
+    /**
+     * checks whether the market has sufficient commodities available
+     * for the buyers request.
+     *
+     * @param message
+     * @return
+     */
+    
+    private boolean processMessage (String message) {
+        String []splitMessage = message.split("|");
+        String instrument = splitMessage[6];
+        double quantity = Double.parseDouble(splitMessage[8]);
+        boolean quantityCheck = false;
+
+        for (Commodity commodity: this.commodities) {
+            if (!commodity.equals(instrument))
+                continue;
+            quantityCheck = commodity.buyCommodity(quantity);
+        }
+        return quantityCheck;
     }
 
     /**
