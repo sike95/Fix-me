@@ -67,10 +67,10 @@ public class Market {
      * Checks through the keys for when the incoming key is
      * Valid, Acceptable, Readable, Writable
      *
-     * @throws Exception
+     * @throws Exception thrown due to a mishandling of the key
      */
 
-    public void startClient() throws Exception {
+    private void startClient() throws Exception {
 
         while (true){
             if (this.selector.select() == 0)
@@ -99,11 +99,11 @@ public class Market {
     /**
      * Takes in a key, processes it and establishes a connection
      *
-     * @param key
-     * @return
-     * @throws Exception
+     * @param key (SelectionKey)
+     * @return (boolean) connection has been established
+     * @throws Exception thrown when an error occurs while trying to establish connection
      */
-    public static boolean processConnect(SelectionKey key) throws Exception{
+    private static boolean processConnect(SelectionKey key) throws Exception{
         SocketChannel channel = (SocketChannel) key.channel();
         while (channel.isConnectionPending()) {
             channel.finishConnect();
@@ -112,8 +112,8 @@ public class Market {
     }
 
     /**
-     *
-     * @throws Exception
+     * Reads incoming message for processing
+     * @throws Exception thrown reading from for wrong
      */
 
     private void read () throws  Exception {
@@ -142,8 +142,8 @@ public class Market {
      * checks whether the market has sufficient commodities available
      * for the buyers request.
      *
-     * @param message
-     * @return
+     * @param message (String) to be processed
+     * @return (boolean) determined by the result of the process
      */
 
     private boolean processMessage (String message) {
@@ -151,7 +151,7 @@ public class Market {
         String instrument = splitMessage[6].split("=")[1];
         double quantity = Double.parseDouble(splitMessage[8].split("=")[1]);
         boolean quantityCheck = false;
-
+        //TODO: create a sell task as well
         for (Commodity commodity: this.commodities) {
             if (!commodity.getName().equals(instrument))
                 continue;
@@ -165,10 +165,10 @@ public class Market {
      * Writes to the client via the buffer
      * Sets the option on the selector to read
      *
-     * @throws Exception
+     * @throws Exception thrown when fails to write to buffer
      */
 
-    public void writeToClient() throws Exception {
+    private void writeToClient() throws Exception {
         messages = bufferedReader.readLine();
         this.buffer = ByteBuffer.allocate(1024);
         this.buffer.put(messages.getBytes());
@@ -179,7 +179,7 @@ public class Market {
         this.client.register(this.selector, SelectionKey.OP_READ);
     }
 
-    public void stop() throws IOException {
+    private void stop() throws IOException {
         this.client.close();
         this.buffer = null;
     }
@@ -192,8 +192,6 @@ public class Market {
                 new Commodity("XRP", 3956982564.0, 0.33));
         try {
             market.startClient();
-        } catch (IOException e ) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
