@@ -63,14 +63,14 @@ public class HandleFile {
         return this.markets;
     }
 
-    public void printList () {
+   /* public void printList () {
         for (Market market: this.markets) {
             System.out.println(market.getName() +"\n\t\t"+ market.getStock1().getName() + "\t" + market.getStock1().getTotalAmount() +"\t"+ market.getStock1().getPrice());
         }
     }
-
+*/
     public static void main(String[] args) {
         HandleFile.getInstance().getMarketsfromTextFile();
-        HandleFile.getInstance().printList();
+     //   HandleFile.getInstance().printList();
     }
 }
