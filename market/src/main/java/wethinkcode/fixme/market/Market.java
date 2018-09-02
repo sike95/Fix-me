@@ -128,8 +128,11 @@ public class Market {
             System.out.println("I am able to read agian");
         }
         else {
-            //TODO: take in the message on process accordingly. blah blah blah
-            this.processMessage(messages);
+            //TODO: insert messages that will be sent back to the broker
+            if (this.processMessage(messages))
+                System.out.println("The buy is valid");
+            else
+                System.out.println("The buy is not valid");
             this.client.register(this.selector, SelectionKey.OP_WRITE );
         }
         buffer.clear();
@@ -144,13 +147,13 @@ public class Market {
      */
 
     private boolean processMessage (String message) {
-        String []splitMessage = message.split("|");
+        String []splitMessage = message.split("\\|");
         String instrument = splitMessage[6].split("=")[1];
         double quantity = Double.parseDouble(splitMessage[8].split("=")[1]);
         boolean quantityCheck = false;
 
         for (Commodity commodity: this.commodities) {
-            if (!commodity.equals(instrument))
+            if (!commodity.getName().equals(instrument))
                 continue;
             quantityCheck = commodity.buyCommodity(quantity);
         }
