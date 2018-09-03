@@ -187,7 +187,16 @@ public class Market {
 
     public static void main(String[] args) {
 
-        MarketFactory marketFactory = new MarketFactory();
-        marketFactory.createMarkets();
+        Market market = new Market("CoinMarketCap",
+                new Commodity("Bitcoin", 178956.0, 6997.34),
+                new Commodity("Ethereum", 10166946.0, 281.46),
+                new Commodity("XRP", 3956982564.0, 0.33));
+        try {
+            market.startClient();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        /*MarketFactory marketFactory = new MarketFactory();
+        marketFactory.createMarkets();*/
     }
 }
