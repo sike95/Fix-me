@@ -1,6 +1,7 @@
 package wethinkcode.fixme.market;
 
 import lombok.Getter;
+import wethinkcode.fixme.market.utilities.MarketFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -70,7 +71,7 @@ public class Market {
      * @throws Exception thrown due to a mishandling of the key
      */
 
-    private void startClient() throws Exception {
+    public void startClient() throws Exception {
 
         while (true){
             if (this.selector.select() == 0)
@@ -186,14 +187,7 @@ public class Market {
 
     public static void main(String[] args) {
 
-        Market market = new Market("CoinMarketCap",
-                new Commodity("Bitcoin", 178956.0, 6997.34),
-                new Commodity("Ethereum", 10166946.0, 281.46),
-                new Commodity("XRP", 3956982564.0, 0.33));
-        try {
-            market.startClient();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        MarketFactory marketFactory = new MarketFactory();
+        marketFactory.createMarkets();
     }
 }
