@@ -7,7 +7,7 @@ public class FixMessageFactory {
     private String instrument;
     private String quantity;
     private String buyOrSell;
-    private String price; //todo this needs to be calculated
+    private String price = "100"; //todo this needs to be calculated
 
     public FixMessageFactory(String brokerID, int market, String instrument, int price, int buyOrSell){
         this.brokerID = brokerID.trim();
