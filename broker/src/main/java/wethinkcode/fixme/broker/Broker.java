@@ -1,6 +1,9 @@
 package wethinkcode.fixme.broker;
 
 import wethinkcode.fixme.broker.Client.BrokerClient;
+import wethinkcode.fixme.broker.FixMessage.FixMessage;
+import wethinkcode.fixme.broker.FixMessage.FixMessageFactory;
+import wethinkcode.fixme.broker.View.ConsoleDisplay;
 
 import java.io.IOException;
 import java.util.Scanner;
@@ -9,42 +12,51 @@ public class Broker {
 
     private static int market;
     private static String instrument;
-    private static int price;
+    private static int quantity;
     private static int buyOrSell;
+    private static String brokerID;
+    private static String fixMessage;
 
     public static void main(String[] args) {
 
-        buyOrSell();
+        ConsoleDisplay view = new ConsoleDisplay();
+        BrokerClient client = new BrokerClient();
+
+
+        try {
+            client.startClient();
+        } catch (IOException e ) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        view.buyOrSell();
         setBuyOrSell();
-        startUpMessage();
+        view.startUpMessage();
         setMarket();
         System.out.println(market);
-        marketContentsMessage();
+        view.marketContentsMessage();
         setInstrument();
         System.out.println(instrument);
-        priceEnquiry();
-        setPrice();
-        System.out.println(price);
+        view.quantityEnquiry();
+        setQuantity();
+        System.out.println(quantity);
+        brokerID = client.getClientID();
 
+        FixMessageFactory factory = new FixMessageFactory(brokerID, market, instrument, quantity, buyOrSell);
+        fixMessage = factory.messageCreation();
 
-//        BrokerClient client = new BrokerClient();
-//        try {
-//            client.startClient();
-//        } catch (IOException e ) {
-//            e.printStackTrace();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
     }
 
-    private static void setPrice(){
+    private static void setQuantity(){
 
         try {
             Scanner sc = new Scanner(System.in);
-            price = sc.nextInt();
+            quantity = sc.nextInt();
         }catch (Exception e){
             System.out.println("Error: Invalid Input, Please enter valid price.");
-            setPrice();
+            setQuantity();
         }
     }
 
@@ -85,76 +97,4 @@ public class Broker {
             //TODO: CREATE A WALLET AND SEND THROUGH DETAILS SO WE CAN CONSTRUCT A SELL FIX MESSAGE.
         }
     }
-
-    private static void startUpMessage(){
-
-        System.out.println("/*************************************************************************/");
-        System.out.println("/*************************************************************************/");
-        System.out.println("/*                                                                       */");
-        System.out.println("/*        Welcome to your Broker, Please select one of the available     */");
-        System.out.println("/*                   Markets you would like to trade in.                 */");
-        System.out.println("/*                                                                       */");
-        System.out.println("/*                                                                       */");
-        System.out.println("/*                                                                       */");
-        System.out.println("/*                                                                       */");
-        System.out.println("/*                                                                       */");
-        System.out.println("/*************************************************************************/");
-        System.out.println("/*************************************************************************/\n");
-
-        System.out.print("Enter Input: ");
-    }
-
-    private static void marketContentsMessage(){
-        System.out.println("/*************************************************************************/");
-        System.out.println("/*************************************************************************/");
-        System.out.println("/*                                                                       */");
-        System.out.println("/*        Market Currently Contains the following Instruments,           */");
-        System.out.println("/*                Select the one you would like to trade in.             */");
-        System.out.println("/*                                                                       */");
-        System.out.println("/*                                                                       */");
-        System.out.println("/*                                                                       */");
-        System.out.println("/*                                                                       */");
-        System.out.println("/*                                                                       */");
-        System.out.println("/*************************************************************************/");
-        System.out.println("/*************************************************************************/\n");
-
-        System.out.print("Enter Input: ");
-
-    }
-
-    private static void priceEnquiry(){
-        System.out.println("/*************************************************************************/");
-        System.out.println("/*************************************************************************/");
-        System.out.println("/*                                                                       */");
-        System.out.println("/*              Please enter valid price that you would like             */");
-        System.out.println("/*                     To purchase the Instrument for.                   */");
-        System.out.println("/*                                                                       */");
-        System.out.println("/*                                                                       */");
-        System.out.println("/*                                                                       */");
-        System.out.println("/*                                                                       */");
-        System.out.println("/*                                                                       */");
-        System.out.println("/*************************************************************************/");
-        System.out.println("/*************************************************************************/\n");
-
-        System.out.print("Enter Input: ");
-    }
-
-
-    private static void buyOrSell(){
-        System.out.println("/*************************************************************************/");
-        System.out.println("/*************************************************************************/");
-        System.out.println("/*                                                                       */");
-        System.out.println("/*              Would you Like to purchase an instrument or              */");
-        System.out.println("/*                   Sell an existing instrument that's.                 */");
-        System.out.println("/*                         Currently in your wallet?                     */");
-        System.out.println("/*                                                                       */");
-        System.out.println("/*           1. BUY                                                      */");
-        System.out.println("/*           2. SELL                                                     */");
-        System.out.println("/*                                                                       */");
-        System.out.println("/*************************************************************************/");
-        System.out.println("/*************************************************************************/\n");
-
-        System.out.print("Enter Input: ");
-    }
-
 }

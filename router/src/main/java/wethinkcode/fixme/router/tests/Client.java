@@ -20,6 +20,7 @@ public class Client {
     private  String messages;
     private  BufferedReader bufferedReader;
     private String clientID;
+    private boolean idFlag = false;
 
     /**
      * Initializing the server
@@ -95,6 +96,12 @@ public class Client {
     private void read () throws  Exception {
         client.read(buffer);
         messages = new String(buffer.array()).trim();
+
+        if (!this.idFlag){
+            this.clientID = messages;
+            this.client.register(this.selector, SelectionKey.OP_READ);
+            this.idFlag = true;
+        }
         System.out.println("response=" + messages);
         buffer.clear();
         this.client.register(this.selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE );
