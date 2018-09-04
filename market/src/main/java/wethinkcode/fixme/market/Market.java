@@ -1,7 +1,7 @@
 package wethinkcode.fixme.market;
 
 import lombok.Getter;
-import wethinkcode.fixme.market.utilities.MarketFactory;
+//import wethinkcode.fixme.market.utilities.MarketFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -191,8 +191,21 @@ public class Market {
                 new Commodity("Bitcoin", 178956.0, 6997.34),
                 new Commodity("Ethereum", 10166946.0, 281.46),
                 new Commodity("XRP", 3956982564.0, 0.33));
+
+        Market market2 = new Market("JSE",
+                new Commodity("Google ", 3030809.0, 1289.0),
+                new Commodity("Facebook", 490949.0, 5005.0),
+                new Commodity("IBM", 4567434.0, 7899.0));
+
+
+        Market market3 = new Market("YayYay ",
+                new Commodity("Gold", 78976.0, 1208.0),
+                new Commodity("Silver", 78565353.0, 909.0) ,
+                new Commodity("Platinum", 74763.0, 1889.0));
         try {
-            market.startClient();
+//            market.startClient();
+//            market2.startClient();
+            market3.startClient();
         } catch (Exception e) {
             e.printStackTrace();
         }

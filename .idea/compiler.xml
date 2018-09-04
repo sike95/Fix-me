@@ -11,5 +11,11 @@
         <module name="router" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="broker" target="7" />
+      <module name="fix-me" target="1.5" />
+      <module name="market" target="7" />
+      <module name="router" target="7" />
+    </bytecodeTargetLevel>
   </component>
 </project>

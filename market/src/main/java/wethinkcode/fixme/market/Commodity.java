@@ -22,4 +22,6 @@ public class Commodity {
         }
             return true;
     }
+
+    //TODO: you need to create a sell function. This will be used by broker.
 }
