@@ -31,13 +31,7 @@ public class Server {
      * @throws IOException
      */
     public Server() throws IOException {
-//        this.port = port;
-//        this.listenAddress = new InetSocketAddress(address, this.port);
         this.selector = Selector.open();
-//        this.serverChannel = ServerSocketChannel.open();
-//        this.serverChannel.configureBlocking(false);
-//        this.serverChannel.socket().bind(this.listenAddress);
-//        this.serverChannel.register(this.selector, SelectionKey.OP_ACCEPT);
     }
 
     /**
@@ -48,7 +42,7 @@ public class Server {
      */
     public void startServer(List<RoutingTable> routingTables) throws Exception {
 
-//        System.out.println("Client started on port >> " + this.port);
+        System.out.println("Starting the server");
 
         int[] ports = {5000, 5001};
 
@@ -59,10 +53,10 @@ public class Server {
             server.socket().bind(new InetSocketAddress(port));
             server.register(selector, SelectionKey.OP_ACCEPT);
             if (port == 5001){
-                System.out.println("Market connected");
+                System.out.println("Listening on port :" + server.getLocalAddress());
             }
             else if (port == 5000){
-                System.out.println("Broker connected");
+                System.out.println("Listening on port :" + server.getLocalAddress());
             }
         }
 
@@ -78,10 +72,9 @@ public class Server {
                     continue;
                 if (key.isAcceptable())
                     this.accept(key, routingTables);
-                if (key.isReadable())
+                if (key.isValid() && key.isReadable())
                     this.read(key, routingTables);
-                //TODO: find out why when a client is forcefully closed an exception gets thrown
-                if (key.isWritable())
+                if (key.isValid() && key.isWritable())
                     this.writeToClient(key, "BOOM. ITS ACTUALLY WORKING!");
             }
         }
