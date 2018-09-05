@@ -45,7 +45,7 @@ public class CheckSumValidator implements MessageValidationHandler {
             total += messageBytes[i];
 
         int CalculatedChecksum = total % 256;
-        checkSum = Integer.toString(CalculatedChecksum - 1) ;
+        checkSum = Integer.toString(CalculatedChecksum) ;
 
         return checkSum;
     }

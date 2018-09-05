@@ -27,7 +27,7 @@ public class BrokerClient extends Broker {
     private BufferedReader bufferedReader;
     private String clientID;
     private boolean idFlag;
-    private static int market;
+    private static String market;
     private static String instrument;
     private static int quantity;
     private static int buyOrSell;
@@ -108,7 +108,7 @@ public class BrokerClient extends Broker {
     public void writeToClient() throws Exception {
         messages = bufferedReader.readLine();
         messages = fixMessage;
-        messages = messages + "|10=" + checkSumCalculator(messages);
+        messages = messages + "10=" + checkSumCalculator(messages);
         this.buffer = ByteBuffer.allocate(1024);
         this.buffer.put(messages.getBytes());
         this.buffer.flip();
@@ -175,7 +175,7 @@ public class BrokerClient extends Broker {
     private static void setMarket(){
         try {
             Scanner sc = new Scanner(System.in);
-            market = sc.nextInt();
+            market = sc.nextLine();
         }catch (Exception e){
             System.out.println("Error: Invalid Input, Please enter valid corresponding market Index.");
             setMarket();
