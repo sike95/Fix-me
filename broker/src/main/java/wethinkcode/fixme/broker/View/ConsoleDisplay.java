@@ -1,7 +1,7 @@
 package wethinkcode.fixme.broker.View;
 
 public class ConsoleDisplay {
-    public static void startUpMessage(){
+    public void startUpMessage(){
 
         System.out.println("/*************************************************************************/");
         System.out.println("/*************************************************************************/");
@@ -19,7 +19,7 @@ public class ConsoleDisplay {
         System.out.print("Enter Input: ");
     }
 
-    public static void marketContentsMessage(){
+    public void marketContentsMessage(){
         System.out.println("/*************************************************************************/");
         System.out.println("/*************************************************************************/");
         System.out.println("/*                                                                       */");
@@ -37,7 +37,7 @@ public class ConsoleDisplay {
 
     }
 
-    public static void quantityEnquiry(){
+    public void quantityEnquiry(){
         System.out.println("/*************************************************************************/");
         System.out.println("/*************************************************************************/");
         System.out.println("/*                                                                       */");
@@ -55,7 +55,7 @@ public class ConsoleDisplay {
     }
 
 
-    public static void buyOrSell(){
+    public void buyOrSell(){
         System.out.println("/*************************************************************************/");
         System.out.println("/*************************************************************************/");
         System.out.println("/*                                                                       */");
