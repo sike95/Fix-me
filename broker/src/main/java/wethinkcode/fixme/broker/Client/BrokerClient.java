@@ -138,7 +138,7 @@ public class BrokerClient extends Broker {
         this.buffer = null;
     }
 
-    public static boolean processConnect(SelectionKey key) throws Exception{
+    public boolean processConnect(SelectionKey key) throws Exception{
         SocketChannel channel = (SocketChannel) key.channel();
         while (channel.isConnectionPending()) {
             channel.finishConnect();
@@ -150,7 +150,7 @@ public class BrokerClient extends Broker {
         return clientID;
     }
 
-    private static void setQuantity(){
+    private void setQuantity(){
 
         try {
             Scanner sc = new Scanner(System.in);
@@ -161,7 +161,7 @@ public class BrokerClient extends Broker {
         }
     }
 
-    private static void setInstrument(){
+    private void setInstrument(){
 
         try {
             Scanner scanner = new Scanner(System.in);
@@ -172,7 +172,7 @@ public class BrokerClient extends Broker {
         }
     }
 
-    private static void setMarket(){
+    private void setMarket(){
         try {
             Scanner sc = new Scanner(System.in);
             market = sc.nextLine();
@@ -182,7 +182,7 @@ public class BrokerClient extends Broker {
         }
     }
 
-    private static void setBuyOrSell(){
+    private void setBuyOrSell(){
         try {
             Scanner sc = new Scanner(System.in);
             buyOrSell = sc.nextInt();
@@ -227,8 +227,6 @@ public class BrokerClient extends Broker {
 
         try {
             client.startClient();
-        } catch (IOException e ) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
