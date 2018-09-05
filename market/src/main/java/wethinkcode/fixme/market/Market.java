@@ -1,7 +1,6 @@
 package wethinkcode.fixme.market;
 
 import lombok.Getter;
-import wethinkcode.fixme.market.utilities.MarketFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
