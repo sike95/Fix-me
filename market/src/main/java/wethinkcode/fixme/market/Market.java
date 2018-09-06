@@ -132,24 +132,38 @@ public class Market {
             //TODO: insert messages that will be sent back to the broker
             if (this.processMessage(messages)) {
                 System.out.println("The buy is valid");
-                messages = validMessageProcessor();
+                messages = validMessageProcessor(true);
                 System.out.println(" <-" + messages);
             }
             else
+            {
                 System.out.println("The buy is not valid");
+                messages = validMessageProcessor(false);
+                System.out.println(" <-" + messages);
+            }
             this.client.register(this.selector, SelectionKey.OP_WRITE );
         }
         buffer.clear();
     }
 
-    private String validMessageProcessor() {
+    private String validMessageProcessor(Boolean orderAccept) {
         String tag[] = messages.split("\\|");
 
+        messages = "";
+        for (String item: tag) {
+            if (!item.contains("10="))
+                messages = messages.concat(item + "|");
+        }
         String newMessage = tag[5].split("=")[1];
         newMessage = newMessage.concat("|" + tag[1] + "|" + tag[2] + "|" + tag[3] + "|");
         newMessage = newMessage.concat("49=" + tag[5].split("=")[1] + "|");
         newMessage = newMessage.concat("56=" + tag[0] + "|");
-        newMessage = newMessage.concat(tag[6] + "|" + tag[7] + "|" + tag[8] + "|" + "10=" +checkSumCalculator(newMessage));
+        newMessage = newMessage.concat(tag[6] + "|" + tag[7] + "|" + tag[8] + "|" );
+        if (orderAccept)
+            newMessage = newMessage.concat("39=0|");
+        else if(!orderAccept)
+            newMessage = newMessage.concat("39=8|");
+        newMessage = newMessage.concat("10=" + checkSumCalculator(newMessage));
 
         return newMessage;
     }

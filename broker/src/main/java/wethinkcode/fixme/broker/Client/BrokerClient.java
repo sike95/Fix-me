@@ -94,12 +94,13 @@ public class BrokerClient extends Broker {
         client.read(buffer);
         messages = new String(buffer.array()).trim();
 
-        if (!this.idFlag){
+        if (!this.idFlag) {
             this.clientID = messages;
             this.client.register(this.selector, SelectionKey.OP_READ);
             this.idFlag = true;
         }
         System.out.println("responses=" + messages);
+        String temp = bufferedReader.readLine();
         buffer.clear();
         this.client.register(this.selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE );
     }
@@ -116,6 +117,7 @@ public class BrokerClient extends Broker {
         System.out.println(" " + messages);
         this.buffer.clear();
         this.client.register(this.selector, SelectionKey.OP_READ);
+        this.idFlag = false;
     }
 
     private String checkSumCalculator(String message){
@@ -199,7 +201,7 @@ public class BrokerClient extends Broker {
         }
     }
 
-    private void Broker(){
+    private void Broker() throws Exception{
         view.buyOrSell();
         setBuyOrSell();
         view.startUpMessage();
@@ -216,6 +218,7 @@ public class BrokerClient extends Broker {
         FixMessageFactory factory = new FixMessageFactory(clientID, market, instrument, quantity, buyOrSell);
         fixMessage = factory.messageCreation();
         System.out.println(fixMessage);
+        client.register(selector, SelectionKey.OP_READ);
     }
 
     public static void main(String[] args) {

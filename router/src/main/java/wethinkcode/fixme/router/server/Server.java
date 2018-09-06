@@ -74,8 +74,8 @@ public class Server {
                     this.accept(key, routingTables);
                 if (key.isValid() && key.isReadable())
                     this.read(key, routingTables);
-                if (key.isValid() && key.isWritable())
-                    this.writeToClient(key, "BOOM. ITS ACTUALLY WORKING!");
+                //if (key.isValid() && key.isWritable())
+                    //this.writeToClient(key, "BOOM. ITS ACTUALLY WORKING!");
             }
         }
     }
