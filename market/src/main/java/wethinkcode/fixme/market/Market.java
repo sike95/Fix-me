@@ -126,9 +126,7 @@ public class Market {
             this.clientID = messages;
             this.client.register(this.selector, SelectionKey.OP_READ);
             this.idFlag = true;
-            System.out.println("I am able to read agian");
-        }
-        else {
+        } else {
             //TODO: insert messages that will be sent back to the broker
             if (this.processMessage(messages)) {
                 System.out.println("The buy is valid");
@@ -199,6 +197,7 @@ public class Market {
      */
 
     private void writeToClient() throws Exception {
+
         messages = bufferedReader.readLine();
         this.buffer = ByteBuffer.allocate(1024);
         this.buffer.put(messages.getBytes());
