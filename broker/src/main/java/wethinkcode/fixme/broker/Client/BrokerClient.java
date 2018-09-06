@@ -98,7 +98,7 @@ public class BrokerClient {
             this.client.register(this.selector, SelectionKey.OP_READ);
             this.idFlag = true;
         }
-        System.out.println("Read message -> " + messages);
+        System.out.println("\nRead message -> " + messages);
         String temp = bufferedReader.readLine();
         buffer.clear();
         this.client.register(this.selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE );
@@ -213,7 +213,7 @@ public class BrokerClient {
         FixMessageFactory factory = new FixMessageFactory(clientID, market, instrument, quantity, buyOrSell);
         System.out.println("Generating FIX message. Press enter.");
         fixMessage = factory.messageCreation();
-        System.out.println("\n");
+       // System.out.println("\n");
 
         client.register(selector, SelectionKey.OP_READ);
     }
