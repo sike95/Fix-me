@@ -10,6 +10,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
@@ -129,13 +130,28 @@ public class Market {
         }
         else {
             //TODO: insert messages that will be sent back to the broker
-            if (this.processMessage(messages))
+            if (this.processMessage(messages)) {
                 System.out.println("The buy is valid");
+                messages = validMessageProcessor();
+                System.out.println(" <-" + messages);
+            }
             else
                 System.out.println("The buy is not valid");
             this.client.register(this.selector, SelectionKey.OP_WRITE );
         }
         buffer.clear();
+    }
+
+    private String validMessageProcessor() {
+        String tag[] = messages.split("\\|");
+
+        String newMessage = tag[5].split("=")[1];
+        newMessage = newMessage.concat("|" + tag[1] + "|" + tag[2] + "|" + tag[3] + "|");
+        newMessage = newMessage.concat("49=" + tag[5].split("=")[1] + "|");
+        newMessage = newMessage.concat("56=" + tag[0] + "|");
+        newMessage = newMessage.concat(tag[6] + "|" + tag[7] + "|" + tag[8] + "|" + "10=" +checkSumCalculator(newMessage));
+
+        return newMessage;
     }
 
     /**
@@ -182,6 +198,21 @@ public class Market {
     private void stop() throws IOException {
         this.client.close();
         this.buffer = null;
+    }
+
+    private String checkSumCalculator(String message){
+        String checkSum;
+        int total = 0;
+        String checkSumMessage = message.replace('|', '\u0001');
+        byte[] messageBytes = checkSumMessage.getBytes(StandardCharsets.US_ASCII);
+
+        for (int i = 0; i < message.length(); i++)
+            total += messageBytes[i];
+
+        int CalculatedChecksum = total % 256;
+        checkSum = Integer.toString(CalculatedChecksum );
+
+        return checkSum;
     }
 
     public static void main(String[] args) {
