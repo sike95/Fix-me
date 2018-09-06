@@ -1,6 +1,5 @@
 package wethinkcode.fixme.broker.Client;
 
-import wethinkcode.fixme.broker.Broker;
 import wethinkcode.fixme.broker.FixMessage.FixMessageFactory;
 import wethinkcode.fixme.broker.View.ConsoleDisplay;
 
@@ -17,7 +16,7 @@ import java.util.Iterator;
 import java.util.Scanner;
 import java.util.Set;
 
-public class BrokerClient extends Broker {
+public class BrokerClient {
 
     private Selector selector;
     private InetSocketAddress hostAddress;
@@ -60,7 +59,7 @@ public class BrokerClient extends Broker {
 
     public void startClient() throws Exception {
 
-        System.out.println("Broker ... started");
+        System.out.println("Broker has started.");
         while (true){
             if (this.selector.select() == 0)
                 continue;
@@ -99,7 +98,7 @@ public class BrokerClient extends Broker {
             this.client.register(this.selector, SelectionKey.OP_READ);
             this.idFlag = true;
         }
-        System.out.println("responses=" + messages);
+        System.out.println("Read message -> " + messages);
         String temp = bufferedReader.readLine();
         buffer.clear();
         this.client.register(this.selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE );
@@ -206,18 +205,16 @@ public class BrokerClient extends Broker {
         setBuyOrSell();
         view.startUpMessage();
         setMarket();
-        System.out.println(market);
         view.marketContentsMessage();
         setInstrument();
-        System.out.println(instrument);
         view.quantityEnquiry();
         setQuantity();
-        System.out.println(quantity);
-
 
         FixMessageFactory factory = new FixMessageFactory(clientID, market, instrument, quantity, buyOrSell);
+        System.out.println("Generating FIX message. Press enter.");
         fixMessage = factory.messageCreation();
-        System.out.println(fixMessage);
+        System.out.println("\n");
+
         client.register(selector, SelectionKey.OP_READ);
     }
 
