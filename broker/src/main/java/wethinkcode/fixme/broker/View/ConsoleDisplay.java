@@ -26,9 +26,9 @@ public class ConsoleDisplay {
         System.out.println("/*        Market Currently Contains the following Instruments,           */");
         System.out.println("/*                Select the one you would like to trade in.             */");
         System.out.println("/*                                                                       */");
-        System.out.println("/*                                                                       */");
-        System.out.println("/*                                                                       */");
-        System.out.println("/*                                                                       */");
+        System.out.println("/*                 * XRP                                                 */");
+        System.out.println("/*                 * Bitcoin                                             */");
+        System.out.println("/*                 * Ethereum                                            */");
         System.out.println("/*                                                                       */");
         System.out.println("/*************************************************************************/");
         System.out.println("/*************************************************************************/\n");
