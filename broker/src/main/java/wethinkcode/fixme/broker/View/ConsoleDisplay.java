@@ -71,4 +71,22 @@ public class ConsoleDisplay {
 
         System.out.print("Enter Input: ");
     }
+
+    public void walletView(double XRP, double Ethereum, double Bitcoin){
+
+        System.out.println("/*************************************************************************/");
+        System.out.println("/*************************************************************************/");
+        System.out.println("/*                                                                       */");
+        System.out.println("/*          This is currently what you own within your wallet            */");
+        System.out.println("/*                                                                       */");
+        System.out.println("/*                   * XRP      -> "+ XRP +"                             ");
+        System.out.println("/*                   * Ethereum -> "+ Ethereum +"                        ");
+        System.out.println("/*                   * Bitcoin  -> "+ Bitcoin+"                          ");
+        System.out.println("/*                                                                       */");
+        System.out.println("/*                                                                       */");
+        System.out.println("/*************************************************************************/");
+        System.out.println("/*************************************************************************/\n");
+
+        System.out.print("\n\n");
+    }
 }
