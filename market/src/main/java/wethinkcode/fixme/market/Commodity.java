@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class Commodity {
+public class Commodity{
     private String name;
     private double totalAmount;
     private double price;

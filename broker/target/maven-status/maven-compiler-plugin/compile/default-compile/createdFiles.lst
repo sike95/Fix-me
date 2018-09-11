@@ -1,0 +1,6 @@
+wethinkcode/fixme/broker/Client/BrokerClient.class
+wethinkcode/fixme/broker/FixMessage/FixMessage.class
+wethinkcode/fixme/broker/FixMessage/FixMessageFactory.class
+wethinkcode/fixme/broker/Client/Wallet.class
+wethinkcode/fixme/broker/Broker.class
+wethinkcode/fixme/broker/View/ConsoleDisplay.class
