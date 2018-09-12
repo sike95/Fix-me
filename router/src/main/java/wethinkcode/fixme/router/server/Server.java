@@ -163,6 +163,7 @@ public class Server {
     /**
      * Writes to client
      * Sets the option on the selector to read
+
      *
      * @param channel
      * @param message

@@ -119,6 +119,7 @@ public class Market {
 
     private void read () throws  Exception {
         client.read(buffer);
+        messages = "";
         messages = new String(buffer.array()).trim();
 
         System.out.println("->" + messages);
@@ -198,13 +199,13 @@ public class Market {
 
     private void writeToClient() throws Exception {
 
-        messages = bufferedReader.readLine();
+        //messages = bufferedReader.readLine();
         this.buffer = ByteBuffer.allocate(1024);
         this.buffer.put(messages.getBytes());
         this.buffer.flip();
         client.write(this.buffer);
-        System.out.println(messages);
         this.buffer.clear();
+        System.out.println(messages);
         this.client.register(this.selector, SelectionKey.OP_READ);
     }
 
